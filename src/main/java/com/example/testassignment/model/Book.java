@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class Book {
 
-    private String id;
-    private String isbn;
+    private Integer id;
+    private Integer isbn;
     private String title;
     private String seriesTitle;
     private String seriesReleaseNumber;
@@ -26,19 +26,19 @@ public class Book {
     private Double price;
     private String url;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getIsbn() {
+    public Integer getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(String isbn) {
+    public void setIsbn(Integer isbn) {
         this.isbn = isbn;
     }
 
@@ -47,7 +47,11 @@ public class Book {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        if (title.length() < 2) {
+            this.title = null;
+        } else {
+            this.title = title.trim();
+        }
     }
 
     public String getSeriesTitle() {
@@ -55,7 +59,11 @@ public class Book {
     }
 
     public void setSeriesTitle(String seriesTitle) {
-        this.seriesTitle = seriesTitle;
+        if (seriesTitle.length() < 2) {
+            this.seriesTitle = null;
+        } else {
+            this.seriesTitle = seriesTitle.trim();
+        }
     }
 
     public String getSeriesReleaseNumber() {
@@ -66,12 +74,17 @@ public class Book {
         this.seriesReleaseNumber = seriesReleaseNumber;
     }
 
+
     public String getAuthors() {
         return authors;
     }
 
     public void setAuthors(String authors) {
-        this.authors = authors;
+        if (authors.length() < 2) {
+            this.authors = null;
+        } else {
+            this.authors = authors.trim();
+        }
     }
 
     public String getPublisher() {
@@ -79,7 +92,11 @@ public class Book {
     }
 
     public void setPublisher(String publisher) {
-        this.publisher = publisher;
+        if (publisher.length() < 2) {
+            this.publisher = null;
+        } else {
+            this.publisher = publisher.trim();
+        }
     }
 
     public String getLanguage() {
@@ -87,7 +104,12 @@ public class Book {
     }
 
     public void setLanguage(String language) {
-        this.language = language;
+        if (language.length() < 2) {
+            this.language = null;
+        } else {
+            this.language = language.trim();
+        }
+
     }
 
     public String getDescription() {
@@ -95,7 +117,11 @@ public class Book {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        if (description.isEmpty()) {
+            this.description = null;
+        } else {
+            this.description = description;
+        }
     }
 
     public Integer getNumPages() {
@@ -119,7 +145,10 @@ public class Book {
     }
 
     public void setGenres(List<String> genres) {
-        this.genres = genres;
+        if (genres.size() == 0) {
+            this.genres = null;
+        } else
+            this.genres = genres;
     }
 
     public String getPublicationDate() {
@@ -183,7 +212,10 @@ public class Book {
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        if (url.isEmpty()) {
+            this.url = null;
+        } else
+            this.url = url;
     }
 
     @Override
