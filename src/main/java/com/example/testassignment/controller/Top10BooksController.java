@@ -2,6 +2,7 @@ package com.example.testassignment.controller;
 
 import com.example.testassignment.model.Book;
 import com.example.testassignment.service.BookService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +23,9 @@ public class Top10BooksController {
 
     @GetMapping("/top10")
     @ResponseBody
-    public List<Book> tpo10(@RequestParam(required = false) int year,
+    public List<Book> top10(@RequestParam(required = false) int year,
                             @RequestParam String column,
-                            @RequestParam String sort) {
+                            @RequestParam Sort.Direction sort) {
         return bookService.processRequest(year, column, sort);
     }
 }

@@ -1,29 +1,20 @@
 package com.example.testassignment.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import static com.example.testassignment.model.Constants.MANDATORY_FIELDS;
 
 @Service
 public class CheckParamsForProcessRequest implements CheckParamsForProcessRequestInterface {
-    @Override
-    public void checkSortParam(String sort) {
-        // Проверка корректности параметра sort
-        if (!sort.equalsIgnoreCase("ASC") && !sort.equalsIgnoreCase("DESC")) {
-            throw new IllegalArgumentException("Invalid value for parameter sort");
-        }
-    }
 
+    /**
+     * Проверка корректности параметра column
+     * @param column - column for check
+     */
     @Override
     public void checkColumnParam(String column) {
-        // Проверка корректности параметра column
-        String[] validColumns = {"book", "author", "numPages", "publicationDate", "rating", "numberOfVoters"};
-        boolean isValidColumn = false;
-        for (String validColumn : validColumns) {
-            if (column.equalsIgnoreCase(validColumn)) {
-                isValidColumn = true;
-                break;
-            }
-        }
-        if (!isValidColumn) {
+        if (StringUtils.isNoneBlank(column) && !MANDATORY_FIELDS.contains(column.toLowerCase())) {
             throw new IllegalArgumentException("Invalid value for parameter column");
         }
     }

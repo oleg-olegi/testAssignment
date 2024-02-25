@@ -2,21 +2,31 @@ package com.example.testassignment.service;
 
 import com.example.testassignment.model.Book;
 import com.example.testassignment.repository.BookPseudoRepository;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.testassignment.model.Constants.MANDATORY_FIELDS;
+
 @Service
-public class BookService implements BookServiceInterface {
+public class BookService implements IBookService {
     private final static Logger LOGGER = LoggerFactory.getLogger(BookService.class);
 
     @Value("${dataset.path}")
@@ -24,98 +34,72 @@ public class BookService implements BookServiceInterface {
     @Value("${path.to.csv.folder}")
     private String pathToCsvDir;
 
-    @Autowired
-    private BookPseudoRepository bookRepository;
-    @Autowired
-    private CheckParamsForProcessRequest checkParamsForProcessRequest;
-    @Autowired
-    private ParsingStringsFromCSV parsingStringsFromCSV;
+    private final BookPseudoRepository bookRepository;
+    private final CheckParamsForProcessRequest checkParamsForProcessRequest;
+    private final ParsingStringsFromCSV parsingStringsFromCSV;
 
-    @PostConstruct
-    public void init() {
-        loadDataset();
+    public BookService(BookPseudoRepository bookRepository,
+                       CheckParamsForProcessRequest checkParamsForProcessRequest,
+                       ParsingStringsFromCSV parsingStringsFromCSV) {
+        this.bookRepository = bookRepository;
+        this.checkParamsForProcessRequest = checkParamsForProcessRequest;
+        this.parsingStringsFromCSV = parsingStringsFromCSV;
+        try {
+            load();
+        } catch (URISyntaxException | IOException | CsvException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public List<Book> processRequest(int year, String column, String sortBy) {
+    public List<Book> processRequest(int year, String column, Sort.Direction sortBy) {
         checkParamsForProcessRequest.checkColumnParam(column);
-        checkParamsForProcessRequest.checkSortParam(sortBy);
-        Comparator<Book> comparator = (b1, b2) -> {
-            if (("ASC").equalsIgnoreCase(sortBy)) { //здесь вопросы
-                return compareByColumn(b1, b2, column);
-            } else {
-                return compareByColumn(b2, b1, column); // Обратная сортировка для DESC
-            }
+        Comparator<Book> comparator = (b1, b2) -> switch (sortBy) {
+            case ASC -> compareByColumn(b1, b2, column);
+            case DESC -> compareByColumn(b2, b1, column);
         };
         return bookRepository.getBookList().stream()
-                .filter(b -> {
-                    switch (column.toLowerCase()) {
-                        case "book" -> {
-                            return b.getTitle() != null;
-                        }
-                        case "author" -> {
-                            return b.getAuthors() != null;
-                        }
-                        case "numpages" -> {
-                            return b.getNumPages() != null;
-                        }
-                        case "publicationdate" -> {
-                            return b.getPublicationDate() != null;
-                        }
-                        case "rating" -> {
-                            return b.getRatingScore() != null;
-                        }
-                        case "numberofvoters" -> {
-                            return b.getNumReviews() != null;
-                        }
-                        default -> throw new IllegalArgumentException("Invalid value for parameter column");
+                .filter(book -> {
+                    if (MANDATORY_FIELDS.contains(column)) {
+                        return getFieldValue(book, column) != null;
                     }
+                    return true;
                 })
                 .sorted(comparator)
                 .limit(10)
                 .collect(Collectors.toList());
     }
 
-    private int compareByColumn(Book b1, Book b2, String column) {
-        return switch (column.toLowerCase()) {
-            case "book" -> b1.getTitle().compareToIgnoreCase(b2.getTitle());
-            case "author" -> b1.getAuthors().compareToIgnoreCase(b2.getAuthors());
-            case "numpages" -> Integer.compare(b1.getNumPages(), b2.getNumPages());
-            case "publicationdate" -> b1.getPublicationDate().compareToIgnoreCase(b2.getPublicationDate());
-            case "rating" -> Double.compare(b1.getRatingScore(), b2.getRatingScore());
-            case "numberofvoters" -> Integer.compare(b1.getNumReviews(), b2.getNumReviews());
-            default -> throw new IllegalArgumentException("Invalid value for parameter column");
-        };
+    private int compareByColumn(Book bookOne, Book bookOther, String column) {
+        return getFieldValue(bookOne, column).compareToIgnoreCase(getFieldValue(bookOther, column));
     }
 
-    private void loadDataset() {
+    private String getFieldValue(Book book, String column) {
         try {
-            File csvFile = new File(pathToCsvDir);
-            BufferedReader reader = new BufferedReader(new FileReader(csvFile));
-            LOGGER.info("Stream opened");
-            boolean isFirstLine = true; // Флаг для определения первой строки
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;// Устанавливаем флаг в false после пропуска первой строки
-                    continue; // Пропускаем первую строку с наименованиями  колонок CSV файла
-                }
-                // Обработка строки из CSV файла и создание объекта Book
-                String[] values = line.split(",", -1); // Разбиваем строку на массив значений
-                LOGGER.info("Array = {}", Arrays.toString(values));
-                // Создание объекта Book
-                Book book = new Book();
-                // Устанавливаем значения из массива в объект Book, преобразуя их при необходимости
-                setBookFields(values, book);
-                bookRepository.add(book);
-                LOGGER.info("Добавлена книга {}", book);
-            }
-            reader.close();
-        } catch (IOException e) {
-            LOGGER.info("Error reading line from CSV file: {}", e.getMessage());
-            e.printStackTrace();
+            return String.valueOf(Book.class.getDeclaredField(column).get(book));
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new IllegalArgumentException("Invalid value for parameter column");
         }
-        LOGGER.info("размер коллекции {}", bookRepository.size());
+    }
+
+    private void load() throws URISyntaxException, IOException, CsvException {
+        CSVParser parser = new CSVParserBuilder()
+                .withSeparator(',')
+                .withIgnoreQuotations(true)
+                .build();
+        Path path = Paths.get(
+                ClassLoader.getSystemResource(pathToCsvDir).toURI());
+        try (Reader reader = Files.newBufferedReader(path)) {
+            try (CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(parser).build()) {
+                csvReader.readAll()
+                        .forEach(lineArr -> {
+                            Book book = new Book();
+                            setBookFields(lineArr, book);
+                            bookRepository.add(book);
+                        });
+            }
+        }
     }
 
     private void setBookFields(String[] values, Book book) {
