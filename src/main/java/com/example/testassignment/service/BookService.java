@@ -1,6 +1,7 @@
 package com.example.testassignment.service;
 
 import com.example.testassignment.model.Book;
+import com.example.testassignment.repository.BookPseudoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,14 @@ import java.util.stream.Collectors;
 @Service
 public class BookService implements BookServiceInterface {
     private final static Logger LOGGER = LoggerFactory.getLogger(BookService.class);
+
     @Value("${dataset.path}")
     private String datasetPath;
     @Value("${path.to.csv.folder}")
     private String pathToCsvDir;
 
     @Autowired
-    private List<Book> bookRepository;
+    private BookPseudoRepository bookRepository;
     @Autowired
     private CheckParamsForProcessRequest checkParamsForProcessRequest;
     @Autowired
@@ -31,7 +33,7 @@ public class BookService implements BookServiceInterface {
 
     @PostConstruct
     public void init() {
-        bookRepository = loadDataset();
+        loadDataset();
     }
 
     @Override
@@ -45,7 +47,7 @@ public class BookService implements BookServiceInterface {
                 return compareByColumn(b2, b1, column); // Обратная сортировка для DESC
             }
         };
-        return bookRepository.stream()
+        return bookRepository.getBookList().stream()
                 .filter(b -> {
                     switch (column.toLowerCase()) {
                         case "book" -> {
@@ -86,7 +88,7 @@ public class BookService implements BookServiceInterface {
         };
     }
 
-    private List<Book> loadDataset() {
+    private void loadDataset() {
         try {
             File csvFile = new File(pathToCsvDir);
             BufferedReader reader = new BufferedReader(new FileReader(csvFile));
@@ -114,7 +116,6 @@ public class BookService implements BookServiceInterface {
             e.printStackTrace();
         }
         LOGGER.info("размер коллекции {}", bookRepository.size());
-        return bookRepository;
     }
 
     private void setBookFields(String[] values, Book book) {
