@@ -63,7 +63,6 @@ public class BookService implements BookServiceInterface {
                         default -> throw new IllegalArgumentException("Invalid value for parameter column");
                     }
                 })
-               // .filter(y -> Integer.parseInt(y.getPublicationDate()) == year)
                 .sorted(comparator)
                 .limit(10)
                 .collect(Collectors.toList());
@@ -128,68 +127,25 @@ public class BookService implements BookServiceInterface {
                 // Устанавливаем значения из массива в объект Book, преобразуя их при необходимости
                 for (int i = 0; i < values.length; i++) {
                     switch (i) {
-                        case 0:
-                            book.setId(parseInteger(values[i]));
-                            break;
-                        case 1:
-                            book.setIsbn(parseInteger(values[i]));
-                            break;
-                        case 2:
-                            book.setTitle(values[i]);
-                            break;
-                        case 3:
-                            book.setSeriesTitle(values[i]);
-                            break;
-                        case 4:
-                            book.setAuthors(values[i]);
-                            break;
-                        case 5:
-                            book.setPublisher(values[i]);
-                            break;
-                        case 6:
-                            book.setLanguage(values[i]);
-                            break;
-                        case 7:
-                            book.setDescription(values[i]);
-                            break;
-                        case 8:
-                            book.setNumPages(parseInteger(values[i]));
-                            break;
-                        case 9:
-                            book.setFormat(values[i]);
-                            break;
-                        case 10:
-                            book.setGenres(Arrays.asList(values[i]));
-                            break;
-                        case 11:
-                            book.setPublicationDate(values[i]);
-                            break;
-                        case 12:
-                            book.setRatingScore(parseDouble(values[i]));
-                            break;
-                        case 13:
-                            book.setNumRatings(parseInteger(values[i]));
-                            break;
-                        case 14:
-                            book.setNumReviews(parseInteger(values[i]));
-                            break;
-                        case 15:
-                            book.setCurrentReaders(parseInteger(values[i]));
-                            break;
-                        case 16:
-                            book.setWantToRead(parseInteger(values[i]));
-                            break;
-                        case 17:
-                            book.setPrice(parseDouble(values[i]));
-                            break;
-                        case 18:
-                            book.setUrl(values[i]);
-                            break;
-
-                        default:
-                            // Если индекс больше 19, значит в строке больше элементов, чем требуется для объекта Book
-                            // В этом случае мы просто игнорируем лишние элементы
-                            break;
+                        case 0 -> book.setId(parseInteger(values[i]));
+                        case 1 -> book.setIsbn(parseInteger(values[i]));
+                        case 2 -> book.setTitle(values[i]);
+                        case 3 -> book.setSeriesTitle(values[i]);
+                        case 4 -> book.setAuthors(values[i]);
+                        case 5 -> book.setPublisher(values[i]);
+                        case 6 -> book.setLanguage(values[i]);
+                        case 7 -> book.setDescription(values[i]);
+                        case 8 -> book.setNumPages(parseInteger(values[i]));
+                        case 9 -> book.setFormat(values[i]);
+                        case 10 -> book.setGenres(Arrays.asList(values[i]));
+                        case 11 -> book.setPublicationDate(values[i]);
+                        case 12 -> book.setRatingScore(parseDouble(values[i]));
+                        case 13 -> book.setNumRatings(parseInteger(values[i]));
+                        case 14 -> book.setNumReviews(parseInteger(values[i]));
+                        case 15 -> book.setCurrentReaders(parseInteger(values[i]));
+                        case 16 -> book.setWantToRead(parseInteger(values[i]));
+                        case 17 -> book.setPrice(parseDouble(values[i]));
+                        case 18 -> book.setUrl(values[i]);
                     }
                 }
 
