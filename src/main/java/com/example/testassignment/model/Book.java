@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class Book {
 
-    private Integer id;
-    private Integer isbn;
+    private String id;
+    private String ISBN;
     private String title;
     private String seriesTitle;
     private String seriesReleaseNumber;
@@ -14,32 +14,32 @@ public class Book {
     private String publisher;
     private String language;
     private String description;
-    private Integer numPages;
+    private String numPages;
     private String format;
     private List<String> genres;
     private String publicationDate;
-    private Double ratingScore;
-    private Integer numRatings;
-    private Integer numReviews;
-    private Integer currentReaders;
-    private Integer wantToRead;
-    private Double price;
+    private String ratingScore;
+    private String numRatings;
+    private String numReviews;
+    private String currentReaders;
+    private String wantToRead;
+    private String price;
     private String url;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Integer getIsbn() {
-        return isbn;
+    public String getISBN() {
+        return ISBN;
     }
 
-    public void setIsbn(Integer isbn) {
-        this.isbn = isbn;
+    public void setISBN(String ISBN) {
+        this.ISBN = ISBN;
     }
 
     public String getTitle() {
@@ -47,11 +47,7 @@ public class Book {
     }
 
     public void setTitle(String title) {
-        if (title.length() < 2) {
-            this.title = null;
-        } else {
-            this.title = title.trim();
-        }
+        this.title = title;
     }
 
     public String getSeriesTitle() {
@@ -59,11 +55,7 @@ public class Book {
     }
 
     public void setSeriesTitle(String seriesTitle) {
-        if (seriesTitle.length() < 2) {
-            this.seriesTitle = null;
-        } else {
-            this.seriesTitle = seriesTitle.trim();
-        }
+        this.seriesTitle = seriesTitle;
     }
 
     public String getSeriesReleaseNumber() {
@@ -80,11 +72,7 @@ public class Book {
     }
 
     public void setAuthors(String authors) {
-        if (authors.length() < 2) {
-            this.authors = null;
-        } else {
-            this.authors = authors.trim();
-        }
+        this.authors = authors;
     }
 
     public String getPublisher() {
@@ -92,43 +80,33 @@ public class Book {
     }
 
     public void setPublisher(String publisher) {
-        if (publisher.length() < 2) {
-            this.publisher = null;
-        } else {
-            this.publisher = publisher.trim();
-        }
+        this.publisher = publisher;
     }
+
 
     public String getLanguage() {
         return language;
     }
 
     public void setLanguage(String language) {
-        if (language.length() < 2) {
-            this.language = null;
-        } else {
-            this.language = language.trim();
-        }
-
+        this.language = language;
     }
+
 
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
-        if (description.isEmpty()) {
-            this.description = null;
-        } else {
-            this.description = description;
-        }
+        this.description = description;
     }
 
-    public Integer getNumPages() {
+
+    public String getNumPages() {
         return numPages;
     }
 
-    public void setNumPages(Integer numPages) {
+    public void setNumPages(String numPages) {
         this.numPages = numPages;
     }
 
@@ -145,10 +123,7 @@ public class Book {
     }
 
     public void setGenres(List<String> genres) {
-        if (genres.size() == 0) {
-            this.genres = null;
-        } else
-            this.genres = genres;
+        this.genres = genres;
     }
 
     public String getPublicationDate() {
@@ -159,51 +134,51 @@ public class Book {
         this.publicationDate = publicationDate;
     }
 
-    public Double getRatingScore() {
+    public String getRatingScore() {
         return ratingScore;
     }
 
-    public void setRatingScore(Double ratingScore) {
+    public void setRatingScore(String ratingScore) {
         this.ratingScore = ratingScore;
     }
 
-    public Integer getNumRatings() {
+    public String getNumRatings() {
         return numRatings;
     }
 
-    public void setNumRatings(Integer numRatings) {
+    public void setNumRatings(String numRatings) {
         this.numRatings = numRatings;
     }
 
-    public Integer getNumReviews() {
+    public String getNumReviews() {
         return numReviews;
     }
 
-    public void setNumReviews(Integer numReviews) {
+    public void setNumReviews(String numReviews) {
         this.numReviews = numReviews;
     }
 
-    public Integer getCurrentReaders() {
+    public String getCurrentReaders() {
         return currentReaders;
     }
 
-    public void setCurrentReaders(Integer currentReaders) {
+    public void setCurrentReaders(String currentReaders) {
         this.currentReaders = currentReaders;
     }
 
-    public Integer getWantToRead() {
+    public String getWantToRead() {
         return wantToRead;
     }
 
-    public void setWantToRead(Integer wantToRead) {
+    public void setWantToRead(String wantToRead) {
         this.wantToRead = wantToRead;
     }
 
-    public Double getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
@@ -212,10 +187,7 @@ public class Book {
     }
 
     public void setUrl(String url) {
-        if (url.isEmpty()) {
-            this.url = null;
-        } else
-            this.url = url;
+        this.url = url;
     }
 
     @Override
@@ -223,7 +195,7 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return id == book.id && isbn.equals(book.isbn) && title.equals(book.title)
+        return id == book.id && ISBN.equals(book.ISBN) && title.equals(book.title)
                 && seriesTitle.equals(book.seriesTitle) && seriesReleaseNumber.equals(book.seriesReleaseNumber)
                 && authors.equals(book.authors) && publisher.equals(book.publisher)
                 && language.equals(book.language) && description.equals(book.description)
@@ -236,7 +208,7 @@ public class Book {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, isbn, title, seriesTitle, seriesReleaseNumber, authors,
+        return Objects.hash(id, ISBN, title, seriesTitle, seriesReleaseNumber, authors,
                 publisher, language, description, numPages, format, genres, publicationDate,
                 ratingScore, numRatings, numReviews, currentReaders, wantToRead, price, url);
     }

@@ -1,32 +1,22 @@
 package com.example.testassignment.service;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ParsingStringsFromCSV implements ParsingStringsFromCSVInterface {
+public class ParsingStringsFromCSV implements IParsingStringsFromCSV {
 
+    /**
+     * using apache commons lang3 methods to parse Nums from String
+     */
 
     @Override
     public Integer parseInteger(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return NumberUtils.createInteger(value);
     }
 
     @Override
     public Double parseDouble(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            return Double.parseDouble(value.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return NumberUtils.createDouble(value);
     }
 }
