@@ -22,7 +22,7 @@ public class Top10BooksController {
 
     @GetMapping("/top10")
     @ResponseBody
-    public List<Book> tpo10(@RequestParam(required = false) int year,
+    public List<Book> tpo10(@RequestParam(required = false) Integer year,
                             @RequestParam String column,
                             @RequestParam String sort) {
         return bookService.processRequest(year, column, sort);

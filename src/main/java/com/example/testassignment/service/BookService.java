@@ -8,7 +8,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
-import com.opencsv.validators.LineValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,7 +61,7 @@ public class BookService implements BookServiceInterface {
 
 
     @Override
-    public List<Book> processRequest(int year, String column, String sortBy) {
+    public List<Book> processRequest(Integer year, String column, String sortBy) {
         checkParamsForProcessRequest.checkColumnParam(column);
         Comparator<Book> comparator = (bookOne, bookOther) ->
                 switch (sortBy) {
@@ -71,7 +70,9 @@ public class BookService implements BookServiceInterface {
                     default -> throw new IllegalArgumentException("Invalid value for sortBy: " + sortBy);
                 };
         return bookRepository.getBookList().stream()
-                .filter(book -> !MANDATORY_FIELDS.contains(column) || getFieldValue(book, column) != null)
+                .filter(book -> MANDATORY_FIELDS.contains(column) || getFieldValue(book, column) != null)
+                .filter(book -> year == null || book.getPublicationDate() != null &&
+                        book.getPublicationDate().contains(year.toString()))
                 .sorted(comparator)
                 .limit(10)
                 .collect(Collectors.toList());
