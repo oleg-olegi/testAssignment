@@ -8,6 +8,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
+import com.opencsv.validators.LineValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,14 +42,12 @@ public class BookService implements BookServiceInterface {
 
     private final CheckParamsForProcessRequest checkParamsForProcessRequest;
 
-    private final ParsingStringsFromCSV parsingStringsFromCSV;
 
     public BookService(BookPseudoRepository bookRepository,
-                       CheckParamsForProcessRequest checkParamsForProcessRequest,
-                       ParsingStringsFromCSV parsingStringsFromCSV) {
+                       CheckParamsForProcessRequest checkParamsForProcessRequest
+    ) {
         this.bookRepository = bookRepository;
         this.checkParamsForProcessRequest = checkParamsForProcessRequest;
-        this.parsingStringsFromCSV = parsingStringsFromCSV;
     }
 
     @PostConstruct
@@ -103,15 +102,14 @@ public class BookService implements BookServiceInterface {
     private void loadDataset() throws URISyntaxException, IOException, CsvException {
         CSVParser parser = new CSVParserBuilder()
                 .withSeparator(',')
-                .withIgnoreQuotations(true)
+                .withIgnoreLeadingWhiteSpace(true)
                 .withFieldAsNull(CSVReaderNullFieldIndicator.EMPTY_SEPARATORS)
                 .build();
-//        Path path = Paths.get(
-//                ClassLoader.getSystemResource(datasetPath).toURI());
         Path path = Paths.get(pathToCsvDir);
         try (Reader reader = Files.newBufferedReader(path)) {
-            LOGGER.info("csv reader");
-            try (CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(parser)
+            try (CSVReader csvReader = new CSVReaderBuilder(reader)
+                    .withSkipLines(0)
+                    .withCSVParser(parser)
                     .build()) {
                 csvReader.readAll()
                         .forEach(line -> {
@@ -119,16 +117,11 @@ public class BookService implements BookServiceInterface {
                             setBookFields(line, book);
                             bookRepository.add(book);
                         });
-                LOGGER.info("размер коллекции {}", bookRepository.size());
+                LOGGER.info("Size of collection {}", bookRepository.size());
             }
         }
     }
 
-    /**
-     * инициализация полей происходит в for loop
-     * по причине того, что массив String[] при парсинге данного для задания файла
-     * может иметь разную длину
-     */
     private void setBookFields(String[] values, Book book) {
         for (int i = 0; i < values.length; i++) {
             switch (i) {
