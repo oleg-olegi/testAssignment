@@ -2,6 +2,8 @@ package com.example.testassignment.controller;
 
 import com.example.testassignment.model.Book;
 import com.example.testassignment.service.BookService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,11 @@ public class Top10BooksController {
     public Top10BooksController(BookService bookService) {
         this.bookService = bookService;
     }
-
+    @ApiResponses({
+            @ApiResponse(
+                    description = "Возвращает 10 книг, отсортированных по году и колонке"
+            )
+    })
     @GetMapping("/top10")
     @ResponseBody
     public List<Book> tpo10(@RequestParam(required = false) Integer year,
